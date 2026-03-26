@@ -8,11 +8,17 @@ import { runPipeline } from "@/lib/pipeline";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    // Backward compat: map old `audio: true` to `voiceover: true`
+    if (body.assetTypes?.audio && !body.assetTypes?.voiceover) {
+      body.assetTypes.voiceover = true;
+      delete body.assetTypes.audio;
+    }
+
     const config = JobConfigSchema.parse(body);
 
     // Validate at least one asset type selected
-    const { images, copy, video, audio } = config.assetTypes;
-    if (!images && !copy && !video && !audio) {
+    const hasAsset = Object.values(config.assetTypes).some(Boolean);
+    if (!hasAsset) {
       return NextResponse.json(
         { error: "Select at least one asset type" },
         { status: 400 }

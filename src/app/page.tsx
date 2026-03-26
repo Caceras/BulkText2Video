@@ -6,8 +6,9 @@ import { PromptBuilder } from "@/components/PromptBuilder";
 import { VariableInputs } from "@/components/VariableInputs";
 import { ReferenceUploader } from "@/components/ReferenceUploader";
 import { AssetTypeSelector } from "@/components/AssetTypeSelector";
+import { AudioSettingsPanel } from "@/components/AudioSettingsPanel";
 import { GenerateButton } from "@/components/GenerateButton";
-import type { AssetTypes } from "@/lib/types";
+import type { AssetTypes, AudioSettings } from "@/lib/types";
 
 function parseVariables(template: string): string[] {
   const matches = template.match(/\[([^\]]+)\]/g);
@@ -33,8 +34,12 @@ export default function HomePage() {
     images: true,
     copy: false,
     video: false,
-    audio: false,
+    voiceover: false,
+    music: false,
+    soundEffect: false,
+    dialogue: false,
   });
+  const [audioSettings, setAudioSettings] = useState<AudioSettings>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,8 +55,8 @@ export default function HomePage() {
 
   const canSubmit = useMemo(() => {
     if (!promptTemplate.trim()) return false;
-    if (!assetTypes.images && !assetTypes.copy && !assetTypes.video && !assetTypes.audio) return false;
-    // All detected variables must have at least one value
+    const hasAsset = Object.values(assetTypes).some(Boolean);
+    if (!hasAsset) return false;
     for (const v of detectedVariables) {
       if (!variableValues[v]?.length) return false;
     }
@@ -70,6 +75,7 @@ export default function HomePage() {
           variables: variableValues,
           referenceImage,
           assetTypes,
+          audioSettings,
         }),
       });
       const data = await res.json();
@@ -83,7 +89,7 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }, [promptTemplate, variableValues, referenceImage, assetTypes, router]);
+  }, [promptTemplate, variableValues, referenceImage, assetTypes, audioSettings, router]);
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -107,6 +113,11 @@ export default function HomePage() {
           onChange={setVariableValues}
         />
         <AssetTypeSelector value={assetTypes} onChange={setAssetTypes} />
+        <AudioSettingsPanel
+          assetTypes={assetTypes}
+          value={audioSettings}
+          onChange={setAudioSettings}
+        />
 
         {error && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">

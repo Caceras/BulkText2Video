@@ -6,6 +6,15 @@ interface AssetGridProps {
   combinations: CombinationResult[];
 }
 
+function AudioPlayer({ src, label }: { src: string; label: string }) {
+  return (
+    <div className="space-y-1">
+      <p className="text-xs text-gray-500">{label}</p>
+      <audio src={src} controls className="w-full h-8" />
+    </div>
+  );
+}
+
 export function AssetGrid({ combinations }: AssetGridProps) {
   if (combinations.length === 0) {
     return <p className="text-gray-500 text-center py-8">No results yet.</p>;
@@ -18,7 +27,6 @@ export function AssetGrid({ combinations }: AssetGridProps) {
           key={combo.index}
           className="bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden"
         >
-          {/* Image preview */}
           {combo.assets.image && (
             <img
               src={combo.assets.image}
@@ -28,12 +36,10 @@ export function AssetGrid({ combinations }: AssetGridProps) {
           )}
 
           <div className="p-4 space-y-3">
-            {/* Expanded prompt */}
             <p className="text-xs text-gray-400 font-mono truncate">
               {combo.expandedPrompt}
             </p>
 
-            {/* Variable values */}
             <div className="flex flex-wrap gap-1">
               {Object.entries(combo.variableValues).map(([key, val]) => (
                 <span
@@ -45,7 +51,6 @@ export function AssetGrid({ combinations }: AssetGridProps) {
               ))}
             </div>
 
-            {/* Copy preview */}
             {combo.assets.copy && (
               <div className="space-y-1">
                 <p className="text-sm font-medium text-white">
@@ -57,25 +62,26 @@ export function AssetGrid({ combinations }: AssetGridProps) {
               </div>
             )}
 
-            {/* Video player */}
             {combo.assets.video && (
-              <video
-                src={combo.assets.video}
-                controls
-                className="w-full rounded"
-              />
+              <video src={combo.assets.video} controls className="w-full rounded" />
             )}
 
-            {/* Audio player */}
-            {combo.assets.audio && (
-              <audio
-                src={combo.assets.audio}
-                controls
-                className="w-full"
-              />
+            {combo.assets.voiceover && (
+              <AudioPlayer src={combo.assets.voiceover} label="Voiceover" />
             )}
 
-            {/* Status */}
+            {combo.assets.music && (
+              <AudioPlayer src={combo.assets.music} label="Music" />
+            )}
+
+            {combo.assets.soundEffect && (
+              <AudioPlayer src={combo.assets.soundEffect} label="Sound FX" />
+            )}
+
+            {combo.assets.dialogue && (
+              <AudioPlayer src={combo.assets.dialogue} label="Dialogue" />
+            )}
+
             <div className="flex items-center gap-2">
               {combo.status === "processing" && (
                 <span className="text-xs text-blue-400">Processing...</span>

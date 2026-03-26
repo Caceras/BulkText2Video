@@ -27,6 +27,15 @@ export default function RootLayout({
                 <a href="/jobs" className="text-gray-300 hover:text-white transition-colors">
                   Jobs
                 </a>
+                <a href="/voices" className="text-gray-300 hover:text-white transition-colors">
+                  Voices
+                </a>
+                <a href="/podcasts" className="text-gray-300 hover:text-white transition-colors">
+                  Podcasts
+                </a>
+                <a href="/agents" className="text-gray-300 hover:text-white transition-colors">
+                  Agents
+                </a>
               </div>
             </div>
           </div>
